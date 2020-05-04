@@ -1,4 +1,4 @@
-from .models import Department, MealsCategory
+from .models import Department, MealsCategory, Meal
 from rest_framework import serializers
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -11,3 +11,7 @@ class MealsCategorySerializer(serializers.ModelSerializer):
         model = MealsCategory
         fields = "__all__"
 
+class MealSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Meal
+        fields = '__all__'

@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from .models import Table, Status
+from .models import Table, Status, ServicePercentage
 from rest_framework.generics import ListCreateAPIView, RetrieveDestroyAPIView, RetrieveUpdateDestroyAPIView
-from .serializers import TableSerializer, StatusSerializer
+from .serializers import TableSerializer, StatusSerializer, ServicePercentageSerializer
 
 class TablesView(ListCreateAPIView):
     model = Table
@@ -33,3 +33,13 @@ class SingleStatusView(RetrieveDestroyAPIView):
     model = Status
     serializer_class = StatusSerializer
     queryset = Status.objects.all()
+
+class ServicePercentageView(ListCreateAPIView):
+    model = ServicePercentage
+    serializer_class = ServicePercentageSerializer
+    queryset = ServicePercentage.objects.all()
+
+class ChangeServicePercentageView(RetrieveDestroyAPIView):
+    model = ServicePercentage
+    serializer_class = ServicePercentageSerializer
+    queryset = ServicePercentage.objects.all()

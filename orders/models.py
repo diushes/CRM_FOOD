@@ -5,3 +5,6 @@ class Table(models.Model):
 
 class Status(models.Model):
     name = models.CharField(max_length=50)
+
+class ServicePercentage(models.Model):
+    percentage = models.IntegerField()
