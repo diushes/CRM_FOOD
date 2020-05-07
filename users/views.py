@@ -1,72 +1,92 @@
-import jwt
-from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from django.http import Http404
+from rest_framework import generics, status
+from rest_framework.generics import UpdateAPIView
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
-from rest_framework_jwt.serializers import jwt_payload_handler
+from rest_framework.views import APIView
 
-from CRM_FOOD import settings
-from .models import User, Role
-from .serializers import UserSerializer, RoleSerializer
-from rest_framework.generics import ListCreateAPIView, RetrieveDestroyAPIView, RetrieveUpdateDestroyAPIView
+from .serializers import *
 
-class RoleView(ListCreateAPIView):
-    model = Role
-    serializer_class = RoleSerializer
-    queryset = Role.objects.all()
+
+class RegistrationAPIView(APIView):
     permission_classes = (AllowAny,)
+    serializer_class = RegistrationSerializer
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-class UserView(ListCreateAPIView):
-    model = User
-    serializer_class = UserSerializer
-    queryset = User.objects.all()
+
+class LoginAPIView(APIView):
     permission_classes = (AllowAny,)
+    serializer_class = LoginSerializer
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-class UpdateUserView(RetrieveUpdateDestroyAPIView):
-    #permission_classes = (IsAuthenticated,)
-    model = User
+
+class UserRetrieveUpdateAPIView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAdminUser]
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
+    def retrieve(self, request, *args, **kwargs):
+        serializer = UserSerializer(request.user)
 
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def update(self, request, *args, **kwargs):
+        serializer_data = request.data
 
-@api_view(['POST'])
-@permission_classes([AllowAny, ])
-def authenticate_user(request):
-    try:
-        login = request.data['login']
-        password = request.data['password']
+        serializer = self.serializer_class(request.user, data=serializer_data, partial=True)
 
-        user = User.objects.get(login=login, password=password)
-        if user:
-            try:
-                payload = jwt_payload_handler(user)
-                token = jwt.encode(payload, settings.SECRET_KEY)
-                user_details = {}
-                user_details['name'] = "%s %s" % (
-                    user.name, user.surname)
-                user_details['token'] = token
-                #user_logged_in.send(sender=user.__class__,
-                #                    request=request, user=user)
-                return Response(user_details, status=status.HTTP_200_OK)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
-            except Exception as e:
-                raise e
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        self.renderer_classes = JSONRenderer
+
+        user_id = request.data.get('user_id', None)
+
+        try:
+            user = self.queryset.get(id=user_id)
+        except User.DoesNotExist:
+            raise Http404
         else:
-            res = {
-                'error': 'can not authenticate with the given credentials or the account has been deactivated'}
-            return Response(res, status=status.HTTP_403_FORBIDDEN)
-    except KeyError:
-        res = {'error': 'please provide a email and a password'}
-        return Response(res)
+            user.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class UserView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class PasswordChangeView(UpdateAPIView):
+    model = get_user_model()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = PasswordChangeSerializer
+    queryset = User.objects.all()
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+
+
+
+
+

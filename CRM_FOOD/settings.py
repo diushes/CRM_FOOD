@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from datetime import timedelta
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -42,12 +43,31 @@ INSTALLED_APPS = [
     'orders',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_auth',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
 ]
+
+
 REST_FRAMEWORK = {
-  'DEFAULT_AUTHENTICATION_CLASSES': (
-    'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-  ),
+            'DEFAULT_AUTHENTICATION_CLASSES': [
+                    'rest_framework_simplejwt.authentication.JWTAuthentication'],
 }
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=75),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=75),
+}
+
+
+
+
+
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -133,11 +153,4 @@ AUTH_USER_MODEL = 'users.User'
 
 import datetime
 
-JWT_AUTH = {
-
-    'JWT_VERIFY': True,
-    'JWT_VERIFY_EXPIRATION': True,
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
-    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-
-}
+SITE_ID = 1

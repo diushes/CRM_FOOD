@@ -18,3 +18,7 @@ class ServicePercentageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ServicePercentage
         fields = "__all__"
+
+#class OrderSerializer(serializers.ModelSerializer):
+#    class Meta:
+#
