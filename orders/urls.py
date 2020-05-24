@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import TablesView, SingleTableView, StatusView ,SingleStatusView, ChangeServicePercentageView,ServicePercentageView
+from .views import TablesView, SingleTableView, StatusView ,SingleStatusView, ChangeServicePercentageView,ServicePercentageView, OrdersView, SingleOrderView
 
 urlpatterns = [
     path('tables/', TablesView.as_view()),
@@ -7,5 +7,7 @@ urlpatterns = [
     path('statuses/', StatusView.as_view()),
     path('statuses/<int:pk>', SingleStatusView.as_view(), name='retrieve'),
     path('servicePercentage/', ServicePercentageView.as_view()),
-    path('servicePercentage/<int:pk>/', ChangeServicePercentageView.as_view(), name='retrieve')
+    path('servicePercentage/<int:pk>/', ChangeServicePercentageView.as_view(), name='retrieve'),
+    path('orders/', OrdersView.as_view()),
+    path('orders/<int:pk>/', SingleOrderView.as_view(),name='retrieve'),
 ]

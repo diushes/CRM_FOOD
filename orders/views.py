@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from .models import Table, Status, ServicePercentage
+from .models import Table, Status, ServicePercentage,Order
 from rest_framework.generics import ListCreateAPIView, RetrieveDestroyAPIView, RetrieveUpdateDestroyAPIView
-from .serializers import TableSerializer, StatusSerializer, ServicePercentageSerializer
+from .serializers import TableSerializer, StatusSerializer, ServicePercentageSerializer, OrderSerializer
 
 class TablesView(ListCreateAPIView):
     model = Table
@@ -43,3 +43,17 @@ class ChangeServicePercentageView(RetrieveDestroyAPIView):
     model = ServicePercentage
     serializer_class = ServicePercentageSerializer
     queryset = ServicePercentage.objects.all()
+
+class OrdersView(ListCreateAPIView):
+    model = Order
+    serializer_class = OrderSerializer
+    queryset = Order.objects.all()
+
+    def get_active_orders(self, *args, **kwargs):
+        return Order.objects.filter(is_open=True)
+
+
+class SingleOrderView(RetrieveDestroyAPIView):
+    model = Order
+    serializer_class = OrderSerializer
+    queryset = Order.objects.all()

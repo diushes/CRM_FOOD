@@ -8,7 +8,6 @@ from rest_framework.views import APIView
 
 from .serializers import *
 
-
 class RegistrationAPIView(APIView):
     permission_classes = (AllowAny,)
     serializer_class = RegistrationSerializer
@@ -71,7 +70,7 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class UserView(generics.ListAPIView):
-    permission_classes = (IsAuthenticated,)
+    #permission_classes = (IsAuthenticated,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 

@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 class Department(models.Model):
     name = models.CharField(max_length=50)
@@ -13,11 +14,10 @@ class MealsCategory(models.Model):
         return self.name
 
 class Meal(models.Model):
+    field = models.Field(primary_key=True)
     name = models.CharField(max_length=50)
-    categoryid = models.ForeignKey(MealsCategory,related_name='categoryid', on_delete=models.CASCADE)
+    categoryid = models.ForeignKey(MealsCategory, related_name='categoryid', on_delete=models.CASCADE)
     price = models.IntegerField()
     description = models.TextField(max_length=150, default='')
-
-
 
 

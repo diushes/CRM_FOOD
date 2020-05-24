@@ -11,6 +11,7 @@ urlpatterns = [
     path('users/', UserView.as_view(), name='users'),
     path('obtain_token/', obtain_jwt_token),
     path('password-change/', PasswordChangeView.as_view()),
+
 ]
 
 urlpatterns += [
